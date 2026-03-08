@@ -15,7 +15,7 @@ exports.usersCreateGet = (req, res) => {
 };
 
 // This just shows the new stuff we're adding to the existing contents
-const { body, validationResult, matchedData } = require("express-validator");
+const { body, query, validationResult, matchedData } = require("express-validator");
 
 const alphaErr = "must only contain letters.";
 const lengthErr = "must be between 1 and 10 characters.";
@@ -103,34 +103,16 @@ exports.usersDeletePost = (req, res) => {
 	res.redirect("/");
 };
 
-const validateSearch = [
-	body("name")
-		.trim()
-		.isAlpha()
-		.withMessage(`name ${alphaErr}`)
-		.isLength({ min: 3, max: 21 })
-		.withMessage(`name ${lengthErr}`),
-	body("email").trim().isEmail().withMessage(`Please enter a valid email`),
-];
 
 exports.userSearchGet = [
-	// validateSearch,
+	
 	(req, res) => {
-		// const errors = validationResult(req)
-		// if (!errors.isEmpty()) {
-		// 	return res.status(400).render("search", {
-		// 		title: "search",
-		// 		errors: errors.array(),
-		// 	});
-		// }
 		const email = req.query.email;
 		const name = req.query.name;
 		const user = usersStorage.findByNameEmail(name, email);
 		if (user === undefined) {
-			console.log("Not found");
 			res.render("searchNotFound", { name: name, email: email });
 		} else {
-			console.log("Found");
 			res.render("search", { user: user });
 		}
 	},

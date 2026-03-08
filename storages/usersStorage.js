@@ -31,11 +31,11 @@ class UsersStorage {
   findByNameEmail(name, email){
     const users = Object.values(this.storage)
     if (name == '' && email != '') {
-      return users.find((user) => user.email.includes(email))
+      return users.find((user) => user.email === email)
     } else if (name != '' && email == '') {
       return users.find((user) => (user.firstName + ' ' + user.lastName) === (name))
     } else {
-      return users.find((user) => (user.firstName + ' ' + user.lastName) === (name) && user.email.includes(email))
+      return users.find((user) => (user.firstName + ' ' + user.lastName) === (name) && user.email === email)
     }
   }
 
