@@ -3,8 +3,6 @@ const usersController = require("../controllers/usersController");
 const { render } = require("ejs");
 const searchRouter = Router();
 
-searchRouter.get("/", (req, res) => {
-    res.render('search')
-})
+searchRouter.get("/", usersController.userSearchGet);
 
 module.exports = searchRouter;

@@ -14,8 +14,6 @@ exports.usersCreateGet = (req, res) => {
 	});
 };
 
-
-
 // This just shows the new stuff we're adding to the existing contents
 const { body, validationResult, matchedData } = require("express-validator");
 
@@ -59,7 +57,7 @@ exports.usersCreatePost = [
 				errors: errors.array(),
 			});
 		}
-		const { firstName, lastName, email, age, bio} = matchedData(req);
+		const { firstName, lastName, email, age, bio } = matchedData(req);
 		usersStorage.addUser({ firstName, lastName, email, age, bio });
 		res.redirect("/");
 	},
@@ -72,6 +70,9 @@ exports.usersUpdateGet = (req, res) => {
 		user: user,
 	});
 };
+
+const nameErr =
+	"must contain first name and last name seperated by space, each from 1 to 10 char";
 
 exports.usersUpdatePost = [
 	validateUser,
@@ -86,7 +87,13 @@ exports.usersUpdatePost = [
 			});
 		}
 		const { firstName, lastName, email, age, bio } = matchedData(req);
-		usersStorage.updateUser(req.params.id, { firstName, lastName, email, age, bio });
+		usersStorage.updateUser(req.params.id, {
+			firstName,
+			lastName,
+			email,
+			age,
+			bio,
+		});
 		res.redirect("/");
 	},
 ];
@@ -95,3 +102,36 @@ exports.usersDeletePost = (req, res) => {
 	usersStorage.deleteUser(req.params.id);
 	res.redirect("/");
 };
+
+const validateSearch = [
+	body("name")
+		.trim()
+		.isAlpha()
+		.withMessage(`name ${alphaErr}`)
+		.isLength({ min: 3, max: 21 })
+		.withMessage(`name ${lengthErr}`),
+	body("email").trim().isEmail().withMessage(`Please enter a valid email`),
+];
+
+exports.userSearchGet = [
+	// validateSearch,
+	(req, res) => {
+		// const errors = validationResult(req)
+		// if (!errors.isEmpty()) {
+		// 	return res.status(400).render("search", {
+		// 		title: "search",
+		// 		errors: errors.array(),
+		// 	});
+		// }
+		const email = req.query.email;
+		const name = req.query.name;
+		const user = usersStorage.findByNameEmail(name, email);
+		if (user === undefined) {
+			console.log("Not found");
+			res.render("searchNotFound", { name: name, email: email });
+		} else {
+			console.log("Found");
+			res.render("search", { user: user });
+		}
+	},
+];
